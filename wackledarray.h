@@ -11,16 +11,16 @@ class wackLedArray
     , length(_len)
     {
       //Looping through all pins and setting mode
-      for(short int i = position; i < position + length; i++)
+      for(short int i = 0; i < length; i++)
       {
-        pinMode(i, OUTPUT);
+        pinMode(position + i, OUTPUT);
       }
     }
 
     //Turns on all LEDs in the array
     void on()
     {
-      for(int i = 0; i < length; i++)
+      for(short int i = 0; i < length; i++)
       {
         //Set the pin at position + i to 5V
         digitalWrite(position + i, HIGH);
@@ -30,7 +30,7 @@ class wackLedArray
     //Turns off all LEDs in the array
     void off()
     {
-      for(int i = 0; i < length; i++)
+      for(short int i = 0; i < length; i++)
       {
         //Set the pin at position + i to ground
         digitalWrite(position + i, LOW);
@@ -40,7 +40,7 @@ class wackLedArray
     //Inverts all LEDs in the array
     void toggle()
     {
-      for(int i = 0; i < length; i++)
+      for(short int i = 0; i < length; i++)
       {
         //Conditional operator checks if the pin is currently set to 5V, if it is already 5V
         //then the pin is set to ground, if it is already ground it is set to 5V
@@ -50,12 +50,15 @@ class wackLedArray
 
     //Turns on the LED at pin position + index
     void on(short int index) { digitalWrite(position + index, HIGH); }
-    
+
     //Turns off the LED at pin position + index
     void off(short int index) { digitalWrite(position + index, LOW); }
-    
+
     //Inverts the LED at pin position + index, uses the same conditional statement as before to decide if ground or 5V
     void toggle(short int index) { digitalWrite(position + index, digitalRead(position + index) == HIGH ? LOW : HIGH); }
+
+    //Retrieves the current state of an LED
+    bool get(short int index) { return digitalRead(position + index) == HIGH; }
 
     //Blank destructor, nothing to do here...
     virtual ~wackLedArray() {}
