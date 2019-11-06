@@ -155,6 +155,10 @@ class wackInstance
     
     //Store the player's current score on this instance
     int score = 0;
+
+    //Define wackGame as a friend class of wackInstance so that wackGame can access private members of
+    //wackInstance such as leds and button that it can use during setup or gameover
+    friend class wackGame;
 };
 
 #endif

@@ -60,8 +60,8 @@ class wackLedArray
     //Retrieves the current state of an LED
     bool get(short int index) { return digitalRead(position + index) == HIGH; }
 
-    //Blank destructor, nothing to do here...
-    virtual ~wackLedArray() {}
+    //Turn off all of the LEDs in the destructor
+    virtual ~wackLedArray() { off(); }
 
   private:
     //First pin of the LED array, think the address of an array
