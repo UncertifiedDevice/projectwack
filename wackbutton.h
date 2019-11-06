@@ -4,7 +4,7 @@
 class wackButton
 {
   public:
-    //Constructor sets the pin used for the button and changes its mode to INPUT
+    //Constructor initializes the pin used for the button and changes its mode to INPUT
     wackButton(short int _pin)
     : pin(_pin) 
     {
@@ -29,7 +29,7 @@ class wackButton
     //Check if the button is currently pressed
     bool high() { return currState == HIGH; }
 
-    //Blank destructor
+    //Blank destructor, nothing to do here...
     virtual ~wackButton() {}
 
   private:
