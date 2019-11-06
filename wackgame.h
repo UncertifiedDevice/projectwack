@@ -10,7 +10,7 @@ class wackGame
     wackGame() {}
     virtual ~wackGame() {}
 
-  private;
+  private:
     //
 };
 
