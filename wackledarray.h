@@ -7,7 +7,7 @@ class wackLedArray
     wackLedArray() {}
     virtual ~wackLedArray() {}
 
-  private;
+  private:
     //
 };
 

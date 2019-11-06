@@ -9,7 +9,7 @@ class wackServo
     wackServo() {}
     virtual ~wackServo() {}
 
-  private;
+  private:
     //
 };
 

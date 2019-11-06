@@ -10,7 +10,7 @@ class wackInstance
     wackInstance() {}
     virtual ~wackInstance() {}
 
-  private;
+  private:
     //
 };
 

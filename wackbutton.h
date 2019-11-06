@@ -32,7 +32,7 @@ class wackButton
     //Blank destructor
     virtual ~wackButton() {}
 
-  private;
+  private:
     //Pin to read for button input
     short int pin;
 
