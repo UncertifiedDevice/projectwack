@@ -40,6 +40,6 @@ class wackButton
     bool currState = LOW;
     //State of the button since  update() call before
     bool prevState = LOW;
-}
+};
 
 #endif

@@ -9,6 +9,6 @@ class wackLedArray
 
   private;
     //
-}
+};
 
 #endif

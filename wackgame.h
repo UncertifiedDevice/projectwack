@@ -12,6 +12,6 @@ class wackGame
 
   private;
     //
-}
+};
 
 #endif
