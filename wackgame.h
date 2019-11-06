@@ -83,9 +83,11 @@ class wackGame
       }
     }
 
+    //Blank destructor, nothing to do here...
     virtual ~wackGame() {}
 
   protected:
+    //Reset all of the active game instances and set difficulty
     void instReset(const short int difficulty)
     {
       for(int i = 0; i < playerCount; i++)
@@ -94,6 +96,7 @@ class wackGame
       }
     }
 
+    //Update all of the active game instances
     void instUpdate()
     {
       for(int i = 0; i < playerCount; i++)
@@ -103,9 +106,12 @@ class wackGame
     }
 
   private:
+    //All of the player instances supported by hardware
     wackInstance instanceArray[HWPLAYERS];
+    //Storing the servo class used to indicate leader
     wackServo servo;
 
+    //The time until the next tick, the current game state and player count
     unsigned long int tickTime = 0;
     short int gameState = 0;
     int playerCount = 0;
