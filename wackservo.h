@@ -29,7 +29,7 @@ class wackServo
         }
 
         //Update the idle time as the servo is currently being used
-        idleTime = millis();
+        idleTime = millis() + 1000;
 
         //Write the new position to the servo
         servo.write(position);
@@ -39,7 +39,7 @@ class wackServo
       }
 
       //Perform these actions if the servo is idle for > 1s and is currently active
-      if(millis() - idleTime > 1000 && active)
+      if(millis() >= idleTime && active)
       {
         //Deactivate / Detach the servo
         active = false;
