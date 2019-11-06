@@ -4,6 +4,8 @@
 #include "wackledarray.h"
 #include "wackbutton.h"
 
+#include "wackconfig.h"
+
 //Three difficulty settings, the first number is the minimum delay between LED
 //toggles, the second number is the upper bounds of an rng starting with 0
 #define DIFFICULTY0 400 + rand() % 150
@@ -56,14 +58,14 @@ class wackInstance
 
           //Turn on the 4th LED to indicate a hit, set a timer for it to stay on
           leds.on(3);
-          scoreFlashTime = millis() + 300;
+          scoreFlashTime = millis() + HITLEDTIME;
 
           //Prime the timer and select a random LED to turn on next
           randTime = millis() + difficultyTimeGen();
           randLed = rand() % 3;
 
           //Sound the buzzer to indicate a hit and finally increment the score
-          tone(buzzer, 1800, 50);
+          tone(buzzer, TONEHIT, TONEHITTIME);
           score++;
         }
         //Perform these actions if the player misses
@@ -72,8 +74,8 @@ class wackInstance
           //Sound the buzzer at a lower frequency to indicate a miss, increase
           //time until currently selected LED turns on as a penalty, also to discourage
           //spamming the button as the LED will remain off indefinitely
-          tone(buzzer, 900, 50);
-          randTime += 350;
+          tone(buzzer, TONEMISS, TONEMISSTIME);
+          randTime += MISSPENALTY;
         }
       }
 

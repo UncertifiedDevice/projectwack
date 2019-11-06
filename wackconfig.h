@@ -24,5 +24,20 @@
 #define BUZZ 10
 #define SERV 11
 
+//You may want to test your servo before setting this, just incrementally set it to higher degrees until it stops
+#define MAXSERVOPOS 160
+
 //The length of each game tick, lowering this value will increase responsiveness but may casuse instability
 #define TICKTIME 10
+
+//Buzzer tones used when the a player scores a hit or when they miss and tone lengths in milliseconds
+#define TONEHIT 1800
+#define TONEHITTIME 50
+#define TONEMISS 900
+#define TONEMISSTIME 50
+
+//Length of time hit indicator LED is flashed in milliseconds
+#define HITLEDTIME 200
+
+//Miss time penality in milliseconds
+#define MISSPENALTY 350
