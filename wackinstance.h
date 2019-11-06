@@ -129,6 +129,7 @@ class wackInstance
         //Undefined difficulty, defaults to Easy / 0
         //This should never happen
         default:
+          Serial.println("WARN: Possible memory corruption, difficulty was undefined");
           return DIFFICULTY0;
           break;
       }
