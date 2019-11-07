@@ -13,6 +13,15 @@
 //Difficulty to be used if there are less than 3 instances supported by the current hardware
 #define HWDIFFICULTY 1
 
+//Three difficulty settings, the first number is the minimum delay between LED
+//toggles, the second number is the upper bounds of an rng starting with 0
+#define DIFFICULTY0 400 + rand() % 150
+#define DIFFICULTY1 300 + rand() % 250
+#define DIFFICULTY2 150 + rand() % 300
+
+//The score limit, the game will continue until a player reaches this score, first there wins
+#define SCORELIMIT 10
+
 //The starting pin of LED arrays used by different instances
 #define LED0 2
 #define LED1 6

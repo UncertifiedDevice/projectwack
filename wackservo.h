@@ -54,6 +54,12 @@ class wackServo
       position = _position;
     }
 
+    //Retrieves the current position of the servo
+    short int read()
+    {
+      return position;
+    }
+
     //Turn off / detach the servo in the destructor
     virtual ~wackServo()
     {
@@ -70,7 +76,7 @@ class wackServo
     Servo servo;
 
     //Store the current and last position of the servo, used to detect changes in position
-    short int lastposition = 0;
+    short int lastposition = 1;
     short int position = 0;
 
     //Store the time the servo has been idling since and whether it is currently active or not

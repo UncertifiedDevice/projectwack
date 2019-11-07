@@ -6,12 +6,6 @@
 
 #include "wackconfig.h"
 
-//Three difficulty settings, the first number is the minimum delay between LED
-//toggles, the second number is the upper bounds of an rng starting with 0
-#define DIFFICULTY0 400 + rand() % 150
-#define DIFFICULTY1 300 + rand() % 250
-#define DIFFICULTY2 150 + rand() % 300
-
 class wackInstance
 {
   //Constructor initializes the wackButton and wackLedArray classes which are

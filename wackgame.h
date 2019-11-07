@@ -159,7 +159,97 @@ class wackGame
           //set the servo to point to the current leader
           case SINGAME:
           {
+            //Update instances...
             instUpdate();
+
+            //Variable used to store the current leader,
+            //equal to playerCount if there's multiple leaders
+            int i = 0;
+
+            //Iterate through all active instances to find current highest score
+            for( ; i < playerCount; i++)
+            {
+              //These variables are used to iterate through other active instances to compare scores
+              int j = i + 1;
+              int k = i - 1;
+
+              //Iterate through all active instances after this one, stop when one has a score higher
+              //than or equal to that of the current instance
+              for( ; j < playerCount; j++)
+              {
+                if(instanceArray[i].getScore() <= instanceArray[j].getScore()) { break; }
+              }
+
+              //Iterate through all active instances before this one, stop when one has a score higher
+              //than or equal to that of the current instance
+              for( ; k >= 0; k--)
+              {
+                if(instanceArray[i].getScore() <= instanceArray[k].getScore()) { break; }
+              }
+
+              //If this instance has the highest score the previous two loops will run until
+              //j is equal to player count and k is -1, stop iterating through active instances
+              //if this happens, if this doesn't happen i will end up equal to playerCount, this
+              //means there is no single highest score
+              if(j == playerCount && k == -1)
+              {
+                break;
+              }
+            }
+
+            //Multiple players hold the top spot or there's only one player, just sweep the servo
+            if(i == playerCount || playerCount == 0)
+            {
+              //Swap the servo between its minimum and maximum positions every 700ms
+              if(millis() > sweepTimer)
+              {
+                //Conditional statement used to decide where to move the servo next based on where it is now
+                servo.write(servo.read() > MAXSERVOPOS / 2 ? 0 : MAXSERVOPOS);
+                sweepTimer = millis() + 700;
+              }
+
+              //Since there are multiple leaders all of the scores need to be checked to see if any has
+              //reached the score limit defined in the config header
+              for(int j = 0; j < playerCount; j++)
+              {
+                if(instanceArray[j].getScore() >= SCORELIMIT)
+                {
+                  //Winner is undefined / there are multiple winners
+                  winner = playerCount;
+
+                  //Switch to game over state, the game has ended
+                  gameState = SGAMEOVER;
+
+                  //Turn off all of the LEDs, the game is over
+                  for(int k = 0; k < playerCount; k++)
+                  {
+                    instanceArray[k].leds.off();
+                  }
+                }
+              }
+            }
+            //One specific player holds the top spot, update servo accordingly
+            else
+            {
+              //Move the servo to point towards the winning player on a dial mounted to the servo
+              servo.write(MAXSERVOPOS * i / (HWPLAYERS - 1));
+
+              //Check if the leading player has reached the score limit
+              if(instanceArray[i].getScore() >= SCORELIMIT)
+              {
+                //The leading player has won, update the winner attribute accordingly
+                winner = i;
+
+                //Switch to game over state, the game has ended
+                gameState = SGAMEOVER;
+
+                //Turn off all of the LEDs, the game is over
+                for(int j = 0; j < playerCount; j++)
+                {
+                  instanceArray[j].leds.off();
+                }
+              }
+            }
 
             break;
           }
@@ -226,6 +316,12 @@ class wackGame
 
     //Used to store the sub-state / stage of the setup
     short int setupStage = 0;
+
+    //Timer used to sweep the servo in case multiple players have the same score
+    unsigned long int sweepTimer = 0;
+
+    //Used for animations in gameover state
+    short int winner;
 };
 
 #endif
