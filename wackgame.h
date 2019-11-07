@@ -40,10 +40,118 @@ class wackGame
           //game based on input
           case SSETUP:
           {
-            playerCount = HWPLAYERS;
-            instReset(2);
+            //Execute code associated with the current setup stage
+            switch(setupStage)
+            {
+              //Short animation and tone to indicate everything is loaded
+              case 0:
+              {
+                //Iterate through all instances interface with their led classes directly
+                for(int i = 0; i < HWPLAYERS; i++)
+                {
+                  //Sound the buzzer for this instance
+                  tone(BUZZ, TONEHIT * (i + 1) / HWPLAYERS, 100);
 
-            gameState = SINGAME;
+                  //Flash the 4 LEDs of this instance in ascending order
+                  instanceArray[i].leds.toggle(0);
+                  for(int j = 0; j < 3; j++)
+                  {
+                    delay(100);
+                    instanceArray[i].leds.toggle(j);
+                    instanceArray[i].leds.toggle(j + 1);
+                  }
+                  delay(100);
+                  instanceArray[i].leds.toggle(3);
+                }
+
+                //Proceed to the next stage of setup
+                setupStage = 1;
+                break;
+              }
+
+              //Read button input to determine the number of players playing
+              case 1:
+              {
+                //Iterate through all hardware input to detect which button was pressed
+                for(int i = 0; i < HWPLAYERS; i++)
+                {
+                  instanceArray[i].button.update();
+
+                  if(instanceArray[i].button.down())
+                  {
+                    //Briefly flash LEDs associated with this button
+                    instanceArray[i].leds.on();
+                    tone(BUZZ, TONEHIT, 50);
+                    delay(100);
+                    tone(BUZZ, TONEHIT, 50);
+                    delay(100);
+                    instanceArray[i].leds.off();
+
+                    //Set the player count to include this button and all before it
+                    //Proceed to the next stage of setup
+                    playerCount = i + 1;
+                    setupStage = 2;
+                    break;
+                  }
+                }
+
+                break;
+              }
+
+              //Read button input to determine the desired difficulty
+              case 2:
+              {
+                //If there are not enough buttons to select between three options a default it used
+                if(HWPLAYERS < 3)
+                {
+                  instReset(HWDIFFICULTY);
+                  break;
+                }
+
+                //Iterate through all hardware input to detect which button was pressed
+                for(int i = 0; i < 3; i++)
+                {
+                  instanceArray[i].button.update();
+
+                  if(instanceArray[i].button.down())
+                  {
+                    //Briefly flash LEDs associated with this button
+                    instanceArray[i].leds.on();
+                    tone(BUZZ, TONEHIT, 50);
+                    delay(100);
+                    tone(BUZZ, TONEHIT, 50);
+                    delay(100);
+                    instanceArray[i].leds.off();
+
+                    //Use this button to decide the difficulty of the game
+                    //Proceed to the final stage of setup
+                    instReset(i);
+                    setupStage = 3;
+                    break;
+                  }
+                }
+
+                break;
+              }
+
+              //Switch game state to SINGAME, reset setup stage for next time
+              case 3:
+              {
+                gameState = SINGAME;
+                setupStage = 0;
+                break;
+              }
+
+              //Perform these actions if stage is undefined
+              //This should never happen
+              default:
+              {
+                Serial.println("WARN: Possible memory corruption, setupStage was undefined");
+                setupStage = 0;
+                break;
+              }
+            }
+
             break;
           }
 
@@ -115,6 +223,9 @@ class wackGame
     unsigned long int tickTime = 0;
     short int gameState = 0;
     int playerCount = 0;
+
+    //Used to store the sub-state / stage of the setup
+    short int setupStage = 0;
 };
 
 #endif

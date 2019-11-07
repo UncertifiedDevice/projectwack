@@ -10,6 +10,9 @@
 //Hardware Players, the maximum number of players / instances available on the current hardware
 #define HWPLAYERS 3
 
+//Difficulty to be used if there are less than 3 instances supported by the current hardware
+#define HWDIFFICULTY 1
+
 //The starting pin of LED arrays used by different instances
 #define LED0 2
 #define LED1 6
