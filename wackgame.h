@@ -201,7 +201,7 @@ class wackGame
             if(i == playerCount || playerCount == 0)
             {
               //Swap the servo between its minimum and maximum positions every 700ms
-              if(millis() > sweepTimer)
+              if(millis() >= sweepTimer)
               {
                 //Conditional statement used to decide where to move the servo next based on where it is now
                 servo.write(servo.read() > MAXSERVOPOS / 2 ? 0 : MAXSERVOPOS);
@@ -220,11 +220,15 @@ class wackGame
                   //Switch to game over state, the game has ended
                   gameState = SGAMEOVER;
 
-                  //Turn off all of the LEDs, the game is over
-                  for(int k = 0; k < playerCount; k++)
-                  {
-                    instanceArray[k].leds.off();
-                  }
+                  //Reset servo sweep timer
+                  sweepTimer = 0;
+
+                  //Announce that the game is over
+                  instLedOn();
+                  tone(BUZZ, TONEHIT);
+                  delay(500);
+                  noTone(BUZZ);
+                  instLedOff();
                 }
               }
             }
@@ -243,11 +247,15 @@ class wackGame
                 //Switch to game over state, the game has ended
                 gameState = SGAMEOVER;
 
-                //Turn off all of the LEDs, the game is over
-                for(int j = 0; j < playerCount; j++)
-                {
-                  instanceArray[j].leds.off();
-                }
+                //Reset servo sweep timer
+                sweepTimer = 0;
+
+                //Announce that the game is over
+                instLedOn();
+                tone(BUZZ, TONEHIT);
+                delay(500);
+                noTone(BUZZ);
+                instLedOff();
               }
             }
 
@@ -258,7 +266,133 @@ class wackGame
           //to SSETUP if any input is detected
           case SGAMEOVER:
           {
-            gameState = SSETUP;
+            //Draw / unknown winners
+            if(winner == playerCount)
+            {
+              //Hijacking the setupStage variable to initialize
+              //game over animations
+              if(!setupStage)
+              {
+                //Not setting up animations twice
+                setupStage = 1;
+  
+                //Initially turn on alternating LEDs on all instances
+                for(int i = 0; i < HWPLAYERS; i++)
+                {
+                  instanceArray[i].leds.on(0);
+                  instanceArray[i].leds.on(2);
+                }
+
+                //Set the animation timer to 300ms
+                animTimer = millis() + 300;
+              }
+
+              //Update LED animations if animation timer is up
+              if(millis() >= animTimer)
+              {
+                //Toggle all of the LEDs
+                for(int i = 0; i < HWPLAYERS; i++)
+                {
+                  instanceArray[i].leds.toggle();
+                }
+
+                //Update the animation timer
+                animTimer = millis() + 300;
+              }
+
+              //Swap the servo between its minimum and maximum positions every 700ms
+              if(millis() >= sweepTimer)
+              {
+                //Conditional statement used to decide where to move the servo next based on where it is now
+                servo.write(servo.read() > MAXSERVOPOS / 2 ? 0 : MAXSERVOPOS);
+
+                //Update the servo sweep timer
+                sweepTimer = millis() + 700;
+              }
+            }
+            //One winner
+            else
+            {
+              //Hijacking the setupStage variable to initialize
+              //game over animations
+              if(!setupStage)
+              {
+                //Not setting up animations twice
+                setupStage = 1;
+
+                //Initially turn on alternating LEDs on winning instance
+                instanceArray[winner].leds.on(0);
+                instanceArray[winner].leds.on(2);
+
+                //Set the animation timer to 300ms
+                animTimer = millis() + 300;
+              }
+
+              //Update LED animations if animation timer is up
+              if(millis() >= animTimer)
+              {
+                //Toggle the entire winning instance's LED array
+                instanceArray[winner].leds.toggle();
+
+                //Update the animation timer
+                animTimer = millis() + 300;
+              }
+
+              //Oscillate the servo around the winning player's position every 300ms
+              if(millis() >= sweepTimer)
+              {
+                //Servo position for the winning player
+                short int winnerServoPos = MAXSERVOPOS * winner / (HWPLAYERS - 1);
+
+                //Detect if the player is position 0
+                if(winnerServoPos == 0)
+                {
+                  //Conditional statement accounts for the servo not being able to move below 0
+                  servo.write(servo.read() > winnerServoPos + 10 ? winnerServoPos : winnerServoPos + 20);
+                }
+                //Detect if the player is position MAX
+                else if(winnerServoPos == MAXSERVOPOS)
+                {
+                  //Conditional statement accounts for the servo not being able to move above MAX
+                  servo.write(servo.read() > winnerServoPos - 10 ? winnerServoPos - 20 : winnerServoPos);
+                }
+                else
+                {
+                  //Conditional statement sweeps the servo within 10 degrees of the winning player's position
+                  servo.write(servo.read() > winnerServoPos ? winnerServoPos - 10 : winnerServoPos + 10);
+                }
+
+                //Update the servo sweep timer
+                sweepTimer = millis() + 300;
+              }
+            }
+
+            //Scan all buttons for input
+            for(int i = 0; i < HWPLAYERS; i++)
+            {
+              //Poll the button
+              instanceArray[i].button.update();
+
+              //Detect changes
+              if(instanceArray[i].button.down())
+              {
+                //Update game state to setup, effectively resetting the game
+                gameState = SSETUP;
+
+                //Reset all of the LEDs
+                for(int j = 0; j < HWPLAYERS; j++)
+                {
+                  instanceArray[j].leds.off();
+                }
+
+                //Reset the servo
+                servo.write(0);
+
+                //Reset the setup stage that was previously hijacked
+                setupStage = 0;
+              }
+            }
+
             break;
           }
 
@@ -303,6 +437,22 @@ class wackGame
       }
     }
 
+    void instLedOff()
+    {
+      for(int i = 0; i < playerCount; i++)
+      {
+        instanceArray[i].leds.off();
+      }
+    }
+
+    void instLedOn()
+    {
+      for(int i = 0; i < playerCount; i++)
+      {
+        instanceArray[i].leds.on();
+      }
+    }
+
   private:
     //All of the player instances supported by hardware
     wackInstance instanceArray[HWPLAYERS];
@@ -322,6 +472,7 @@ class wackGame
 
     //Used for animations in gameover state
     short int winner;
+    unsigned long int animTimer = 0;
 };
 
 #endif
