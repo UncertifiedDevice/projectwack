@@ -1,13 +1,14 @@
 #include "wackgame.h"
 
+//Setting up the game
 wackGame game;
 
 void setup() {
-  // put your setup code here, to run once:
+  //Setting up the serial port for printing
   Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //Ticking the game
   game.update();
 }

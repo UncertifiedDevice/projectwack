@@ -22,6 +22,7 @@ class wackGame
                      wackInstance(LED1, BTN1, BUZZ),
                      wackInstance(LED2, BTN2, BUZZ)})
     , servo(SERV)
+    , score{0}
     { }
 
     //Update / tick function that processes the games logic, to be run every loop()
@@ -65,6 +66,7 @@ class wackGame
                 }
 
                 //Proceed to the next stage of setup
+                Serial.println("Select the number of players (First button for one player, Second button for two etc...)");
                 setupStage = 1;
                 break;
               }
@@ -90,6 +92,9 @@ class wackGame
                     //Set the player count to include this button and all before it
                     //Proceed to the next stage of setup
                     playerCount = i + 1;
+                    Serial.println("Select the game difficulty (First button for easy, Second button for medium, Third button for Hard)");
+                    Serial.println("If there are less than three buttons defaults to ");
+                    Serial.print(HWDIFFICULTY + 1);
                     setupStage = 2;
                     break;
                   }
@@ -137,6 +142,7 @@ class wackGame
               //Switch game state to SINGAME, reset setup stage for next time
               case 3:
               {
+                Serial.println("Begin!");
                 gameState = SINGAME;
                 setupStage = 0;
                 break;
@@ -229,6 +235,7 @@ class wackGame
                   delay(500);
                   noTone(BUZZ);
                   instLedOff();
+                  break;
                 }
               }
             }
@@ -245,6 +252,10 @@ class wackGame
                 winner = i;
 
                 //Switch to game over state, the game has ended
+                Serial.println("---WINNER!---");
+                Serial.println("Player ");
+                Serial.print(winner + 1);
+                Serial.print(" wins");
                 gameState = SGAMEOVER;
 
                 //Reset servo sweep timer
@@ -256,6 +267,31 @@ class wackGame
                 delay(500);
                 noTone(BUZZ);
                 instLedOff();
+                Serial.println("Press any button to reset...");
+              }
+            }
+
+            //Check if any of the scores have changed, print to serial
+            for(int j = 0; j < playerCount; j++)
+            {
+              if(score[j] < instanceArray[j].getScore())
+              {
+                score[j] = instanceArray[j].getScore();
+                Serial.println("Player ");
+                Serial.print(j + 1);
+                Serial.print(" Scored! Now at ");
+                Serial.print(score[j]);
+                Serial.print(" points");
+                if(j == i)
+                {
+                  Serial.println("Player ");
+                  Serial.print(j + 1);
+                  Serial.print(" is in the lead");
+                }
+                if(i == playerCount)
+                {
+                  Serial.println("Multiple players are in the lead");
+                }
               }
             }
 
@@ -425,6 +461,7 @@ class wackGame
       for(int i = 0; i < playerCount; i++)
       {
         instanceArray[i].reset(difficulty);
+        score[i] = 0;
       }
     }
 
@@ -473,6 +510,9 @@ class wackGame
     //Used for animations in gameover state
     short int winner;
     unsigned long int animTimer = 0;
+
+    //Score array used to check for changes in score during game and print when a player gains a point in the serial
+    int score[HWPLAYERS];
 };
 
 #endif
